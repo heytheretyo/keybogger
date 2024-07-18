@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type DailyStats struct {
+type BufferStats struct {
 	Keystrokes   int
 	LeftClicks   int
 	RightClicks  int
@@ -55,6 +55,8 @@ func initialize_database() {
 	if err != nil {
 		log.Println("error initializing counts:", err)
 	}
+
+	bufferStats = load_daily_stats()
 }
 
 func save_bucket() {
@@ -72,7 +74,7 @@ func save_bucket() {
 	bucket = EventBucket{} // reset the bucket
 }
 
-func load_daily_stats() DailyStats {
+func load_daily_stats() BufferStats {
 	// Get the start and end of the current day
 	now := time.Now()
 	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
@@ -90,7 +92,7 @@ func load_daily_stats() DailyStats {
 	WHERE timestamp BETWEEN ? AND ?`
 
 	row := db.QueryRow(query, startOfDay, endOfDay)
-	var stats DailyStats
+	var stats BufferStats
 
 	err := row.Scan(&stats.LeftClicks, &stats.RightClicks, &stats.MiddleClicks,
 		&stats.Keystrokes, &stats.MouseTravel, &stats.ScrollWheels)

@@ -20,6 +20,14 @@ var (
 	inchesToMeters = 0.0254
 	db             *sql.DB
 	saveInterval   = time.Second * 10
+	bufferStats    = BufferStats{
+		LeftClicks:   0,
+		RightClicks:  0,
+		MiddleClicks: 0,
+		Keystrokes:   0,
+		MouseTravel:  0.0,
+		ScrollWheels: 0,
+	}
 )
 
 type EventBucket struct {
@@ -34,8 +42,6 @@ type EventBucket struct {
 var bucket EventBucket
 
 func track_events() {
-	fmt.Println("--- press 'ctrl + space + b' to stop tracking ---")
-
 	hook.Register(hook.KeyDown, []string{"ctrl", "space", "b"}, func(e hook.Event) {
 		fmt.Println("stopping tracking...")
 		hook.End()
@@ -57,21 +63,27 @@ func track_events() {
 		if ev.Kind == hook.KeyDown || ev.Kind == hook.MouseDown || ev.Kind == hook.MouseWheel || ev.Kind == hook.MouseMove {
 			if ev.Kind == hook.KeyDown {
 				bucket.Keystrokes++
+				bufferStats.Keystrokes++
 			} else if ev.Kind == hook.MouseDown {
 				switch ev.Button {
 				case 1:
 					bucket.LeftClicks++
+					bufferStats.LeftClicks++
 				case 2:
 					bucket.MiddleClicks++
+					bufferStats.MiddleClicks++
 				case 3:
 					bucket.RightClicks++
+					bufferStats.RightClicks++
 				}
 			} else if ev.Kind == hook.MouseWheel {
 				bucket.ScrollWheels++
+				bufferStats.ScrollWheels++
 			} else if ev.Kind == hook.MouseMove {
 				if firstMove {
 					distance := calculate_distance(lastX, lastY, ev.X, ev.Y)
 					bucket.MouseTravel += distance
+					bufferStats.MouseTravel += distance
 				} else {
 					firstMove = true
 				}

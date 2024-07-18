@@ -30,7 +30,7 @@ func spawn_gui() {
 	mouseTravelledLabel := widget.NewLabel("total mouse travelled: 0.0")
 	scrollWheelsLabel := widget.NewLabel("scroll wheels: 0")
 
-	updateStats := func(stats DailyStats) {
+	updateStats := func(stats BufferStats) {
 		keystrokesLabel.SetText(fmt.Sprintf("keystrokes: %d", stats.Keystrokes))
 		leftClicksLabel.SetText(fmt.Sprintf("left mouse clicks: %d", stats.LeftClicks))
 		rightClicksLabel.SetText(fmt.Sprintf("right mouse clicks: %d", stats.RightClicks))
@@ -39,16 +39,23 @@ func spawn_gui() {
 		scrollWheelsLabel.SetText(fmt.Sprintf("scroll wheels: %d", stats.ScrollWheels))
 	}
 
-	stats := load_daily_stats()
-	updateStats(stats)
+	updateStats(bufferStats)
 
 	go func() {
-		ticker := time.NewTicker(time.Second)
+		ticker := time.NewTicker(time.Millisecond)
 		defer ticker.Stop()
 
 		for range ticker.C {
-			stats := load_daily_stats()
-			updateStats(stats)
+			updateStats(bufferStats)
+		}
+	}()
+
+	go func() {
+		ticker := time.NewTicker(time.Second * 30)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			bufferStats = load_daily_stats()
 		}
 	}()
 
