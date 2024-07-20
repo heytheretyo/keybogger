@@ -19,7 +19,7 @@ var (
 	dpi            = 475.47
 	inchesToMeters = 0.0254
 	db             *sql.DB
-	saveInterval   = time.Second * 10
+	saveInterval   = time.Second * 45
 	bufferStats    = BufferStats{
 		LeftClicks:   0,
 		RightClicks:  0,

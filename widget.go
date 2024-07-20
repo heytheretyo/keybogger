@@ -42,7 +42,7 @@ func spawn_gui() {
 	updateStats(bufferStats)
 
 	go func() {
-		ticker := time.NewTicker(time.Millisecond)
+		ticker := time.NewTicker(time.Millisecond * 100)
 		defer ticker.Stop()
 
 		for range ticker.C {
@@ -50,14 +50,14 @@ func spawn_gui() {
 		}
 	}()
 
-	go func() {
-		ticker := time.NewTicker(time.Second * 30)
-		defer ticker.Stop()
+	// go func() {
+	// 	ticker := time.NewTicker(time.Second * 30)
+	// 	defer ticker.Stop()
 
-		for range ticker.C {
-			bufferStats = load_daily_stats()
-		}
-	}()
+	// 	for range ticker.C {
+	// 		bufferStats = load_daily_stats()
+	// 	}
+	// }()
 
 	content := container.NewVBox(
 		keystrokesLabel,
